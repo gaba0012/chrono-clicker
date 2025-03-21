@@ -5,30 +5,76 @@
   <title>Chrono Clicker</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #0e0e2c, #15153d);
+      color: #f2f2f2;
       text-align: center;
-      background: #0e0e2c;
-      color: white;
       margin: 0;
       padding: 2em;
     }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 0.2em;
+      color: #62dafc;
+    }
+
     #rift {
-      width: 150px;
-      height: 150px;
+      width: 160px;
+      height: 160px;
       margin: 2em auto;
       border-radius: 50%;
-      background: radial-gradient(circle, #62dafc, #1f6fc1);
+      background: radial-gradient(circle, #62dafc 40%, #1f6fc1);
+      box-shadow: 0 0 25px #1f6fc1, 0 0 40px #62dafc;
+      animation: pulse 2s infinite;
       cursor: pointer;
-      box-shadow: 0 0 20px #1f6fc1;
     }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 25px #1f6fc1, 0 0 40px #62dafc;
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 35px #62dafc, 0 0 60px #62dafc;
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 25px #1f6fc1, 0 0 40px #62dafc;
+      }
+    }
+
     button {
-      padding: 0.5em 1em;
+      padding: 0.6em 1.2em;
       margin: 0.5em;
       background-color: #1f6fc1;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       color: white;
-      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+      box-shadow: 0 0 8px #1f6fc1;
+    }
+
+    button:hover {
+      background-color: #3b8be3;
+    }
+
+    .progress-container {
+      width: 60%;
+      margin: 1em auto;
+      background-color: #333;
+      border-radius: 20px;
+      overflow: hidden;
+      height: 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #62dafc;
+      transition: width 0.5s;
     }
   </style>
 </head>
@@ -36,10 +82,20 @@
   <h1>Chrono Clicker</h1>
   <p>Chrono-Energie: <span id="energy">0</span></p>
   <p>Zeitalter: <span id="age">Steinzeit</span></p>
-  <div id="rift"></div>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div id="rift" title="Klicke den Zeitriss!"></div>
+
   <div>
-    <button id="upgrade-click">Upgrade Klick (+1) – Kosten: <span id="click-cost">50</span></button>
-    <button id="upgrade-auto">Chrono-Drohne (+1/sec) – Kosten: <span id="auto-cost">100</span></button>
+    <button id="upgrade-click">
+      Upgrade Klick (+1) – Kosten: <span id="click-cost">50</span>
+    </button>
+    <button id="upgrade-auto">
+      Chrono-Drohne (+1/sec) – Kosten: <span id="auto-cost">100</span>
+    </button>
   </div>
 
   <script>
@@ -48,13 +104,25 @@
     let autoPower = parseInt(localStorage.getItem('auto_power')) || 0;
     let ageLevel = parseInt(localStorage.getItem('age_level')) || 0;
 
-    const ages = ['Steinzeit', 'Magisches Imperium', 'Dampf-Zeitalter', 'Zeitsplitter-Ära', 'Post-Realität'];
+    const ages = [
+      'Steinzeit',
+      'Magisches Imperium',
+      'Dampf-Zeitalter',
+      'Zeitsplitter-Ära',
+      'Post-Realität'
+    ];
 
     function updateDisplay() {
       document.getElementById('energy').textContent = energy;
       document.getElementById('age').textContent = ages[ageLevel] || 'Unbekannt';
       document.getElementById('click-cost').textContent = 50 * clickPower;
       document.getElementById('auto-cost').textContent = 100 * (autoPower + 1);
+      updateProgressBar();
+    }
+
+    function updateProgressBar() {
+      const progress = Math.min(100, (energy / ((ageLevel + 1) * 500)) * 100);
+      document.getElementById('progressBar').style.width = progress + '%';
     }
 
     function checkAgeUp() {
