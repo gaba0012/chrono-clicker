@@ -28,6 +28,8 @@
       box-shadow: 0 0 25px #1f6fc1, 0 0 40px #62dafc;
       animation: pulse 2s infinite;
       cursor: pointer;
+      position: relative;
+      z-index: 2;
     }
 
     @keyframes pulse {
@@ -67,17 +69,46 @@
       background-color: #62dafc;
       transition: width 0.5s;
     }
+
+    #drones-container {
+      position: absolute;
+      top: calc(50% - 80px);
+      left: calc(50% - 80px);
+      width: 160px;
+      height: 160px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .drone {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #ff3ec9;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #ff3ec9;
+      animation: orbit 4s linear infinite;
+    }
+
+    @keyframes orbit {
+      from { transform: rotate(0deg) translateX(80px) rotate(0deg); }
+      to { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
+    }
   </style>
 </head>
 <body>
   <h1>Chrono Clicker</h1>
+
   <p>Chrono-Energie: <span id="energy">0</span></p>
   <p>Zeitalter: <span id="age">Steinzeit</span></p>
+  <p>Klick-Level: <span id="clickPower">1</span></p>
+  <p>Aktive Chrono-Drohnen: <span id="autoPower">0</span></p>
 
   <div class="progress-container">
     <div class="progress-bar" id="progressBar"></div>
   </div>
 
+  <div id="drones-container"></div>
   <div id="rift" title="Klick mich!"></div>
 
   <div>
@@ -98,12 +129,28 @@
       document.getElementById('age').textContent = ages[ageLevel] || 'Unbekannt';
       document.getElementById('click-cost').textContent = 50 * clickPower;
       document.getElementById('auto-cost').textContent = 100 * (autoPower + 1);
+      document.getElementById('clickPower').textContent = clickPower;
+      document.getElementById('autoPower').textContent = autoPower;
       updateProgressBar();
+      renderDrones();
     }
 
     function updateProgressBar() {
       const progress = Math.min(100, (energy / ((ageLevel + 1) * 500)) * 100);
       document.getElementById('progressBar').style.width = progress + '%';
+    }
+
+    function renderDrones() {
+      const container = document.getElementById('drones-container');
+      container.innerHTML = '';
+      for (let i = 0; i < autoPower; i++) {
+        const drone = document.createElement('div');
+        drone.classList.add('drone');
+        const angle = (360 / autoPower) * i;
+        drone.style.transform = `rotate(${angle}deg) translateX(80px) rotate(-${angle}deg)`;
+        drone.style.animationDelay = `-${(4 / autoPower) * i}s`;
+        container.appendChild(drone);
+      }
     }
 
     function checkAgeUp() {
