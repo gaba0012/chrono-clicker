@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Chrono Clicker</title>
+  <title>Chrono Clicker – Missionenmodus</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -20,6 +20,7 @@
     }
 
     #rift {
+      position: relative;
       width: 160px;
       height: 160px;
       margin: 2em auto;
@@ -28,7 +29,6 @@
       box-shadow: 0 0 25px #1f6fc1, 0 0 40px #62dafc;
       animation: pulse 2s infinite;
       cursor: pointer;
-      position: relative;
       z-index: 2;
     }
 
@@ -72,8 +72,8 @@
 
     #drones-container {
       position: absolute;
-      top: calc(50% - 80px);
-      left: calc(50% - 80px);
+      top: 0;
+      left: 0;
       width: 160px;
       height: 160px;
       pointer-events: none;
@@ -94,49 +94,66 @@
       from { transform: rotate(0deg) translateX(80px) rotate(0deg); }
       to { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
     }
+
+    #story-box {
+      background-color: #1a1a2d;
+      border: 1px solid #3b8be3;
+      border-radius: 10px;
+      padding: 1em;
+      margin: 2em auto;
+      width: 70%;
+      box-shadow: 0 0 10px #1f6fc1;
+    }
   </style>
 </head>
 <body>
-  <h1>Chrono Clicker</h1>
+  <h1>Chrono Clicker – Mission: Der erste Funke</h1>
 
   <p>Chrono-Energie: <span id="energy">0</span></p>
-  <p>Zeitalter: <span id="age">Steinzeit</span></p>
-  <p>Klick-Level: <span id="clickPower">1</span></p>
-  <p>Aktive Chrono-Drohnen: <span id="autoPower">0</span></p>
+  <p>Klick-Level: <span id="clickPower">1</span> | Drohnen: <span id="autoPower">0</span></p>
 
   <div class="progress-container">
     <div class="progress-bar" id="progressBar"></div>
   </div>
 
-  <div id="drones-container"></div>
-  <div id="rift" title="Klick mich!"></div>
+  <div id="rift">
+    <div id="drones-container"></div>
+  </div>
 
   <div>
-    <button id="upgrade-click">Upgrade Klick (+1) – Kosten: <span id="click-cost">50</span></button>
-    <button id="upgrade-auto">Chrono-Drohne (+1/sec) – Kosten: <span id="auto-cost">100</span></button>
+    <button id="upgrade-click">Upgrade Klick – Kosten: <span id="click-cost">50</span></button>
+    <button id="upgrade-auto">Chrono-Drohne – Kosten: <span id="auto-cost">100</span></button>
+  </div>
+
+  <div id="story-box">
+    <h3>Mission: Der erste Funke</h3>
+    <p><strong>Ziel:</strong> Sammle 1.000 Chrono-Energie</p>
+    <p><strong>Beschreibung:</strong> Ein schwacher Zeitimpuls wurde in Eurorift Bas-40 entdeckt. Dr. Olen Storm schickt dich los, um ihn zu untersuchen.</p>
+    <p><strong>Lore:</strong> Die Aktivierung des CLR markiert den ersten bekannten Zugriff auf eine instabile Zeitzone.</p>
+    <p id="mission-status"><em>Status: Aktiv</em></p>
   </div>
 
   <script>
     let energy = parseInt(localStorage.getItem('chrono_energy')) || 0;
     let clickPower = parseInt(localStorage.getItem('click_power')) || 1;
     let autoPower = parseInt(localStorage.getItem('auto_power')) || 0;
-    let ageLevel = parseInt(localStorage.getItem('age_level')) || 0;
 
-    const ages = ['Steinzeit', 'Magisches Imperium', 'Dampf-Zeitalter', 'Zeitsplitter-Ära', 'Post-Realität'];
+    const missionGoal = 1000;
+    let missionCompleted = localStorage.getItem('mission1_complete') === 'true';
 
     function updateDisplay() {
       document.getElementById('energy').textContent = energy;
-      document.getElementById('age').textContent = ages[ageLevel] || 'Unbekannt';
-      document.getElementById('click-cost').textContent = 50 * clickPower;
-      document.getElementById('auto-cost').textContent = 100 * (autoPower + 1);
       document.getElementById('clickPower').textContent = clickPower;
       document.getElementById('autoPower').textContent = autoPower;
+      document.getElementById('click-cost').textContent = 50 * clickPower;
+      document.getElementById('auto-cost').textContent = 100 * (autoPower + 1);
       updateProgressBar();
       renderDrones();
+      updateMissionStatus();
     }
 
     function updateProgressBar() {
-      const progress = Math.min(100, (energy / ((ageLevel + 1) * 500)) * 100);
+      const progress = Math.min(100, (energy / missionGoal) * 100);
       document.getElementById('progressBar').style.width = progress + '%';
     }
 
@@ -153,29 +170,26 @@
       }
     }
 
-    function checkAgeUp() {
-      if (energy >= (ageLevel + 1) * 500 && ageLevel < ages.length - 1) {
-        ageLevel++;
-        alert('🕒 Zeitsprung! Willkommen im ' + ages[ageLevel]);
+    function updateMissionStatus() {
+      const status = document.getElementById('mission-status');
+      if (missionCompleted) {
+        status.innerHTML = '<strong>Status:</strong> ✅ Abgeschlossen';
+      } else if (energy >= missionGoal) {
+        missionCompleted = true;
+        localStorage.setItem('mission1_complete', 'true');
+        status.innerHTML = '<strong>Status:</strong> ✅ Abgeschlossen';
+        alert('🎉 Mission abgeschlossen: Der erste Funke!');
       }
-    }
-
-    function saveGame() {
-      localStorage.setItem('chrono_energy', energy);
-      localStorage.setItem('click_power', clickPower);
-      localStorage.setItem('auto_power', autoPower);
-      localStorage.setItem('age_level', ageLevel);
     }
 
     document.getElementById('rift').addEventListener('click', function () {
       energy += clickPower;
-      checkAgeUp();
       saveGame();
       updateDisplay();
     });
 
     document.getElementById('upgrade-click').addEventListener('click', function () {
-      let cost = 50 * clickPower;
+      const cost = 50 * clickPower;
       if (energy >= cost) {
         energy -= cost;
         clickPower++;
@@ -185,7 +199,7 @@
     });
 
     document.getElementById('upgrade-auto').addEventListener('click', function () {
-      let cost = 100 * (autoPower + 1);
+      const cost = 100 * (autoPower + 1);
       if (energy >= cost) {
         energy -= cost;
         autoPower++;
@@ -194,12 +208,17 @@
       }
     });
 
-    setInterval(function () {
+    setInterval(() => {
       energy += autoPower;
-      checkAgeUp();
       saveGame();
       updateDisplay();
     }, 1000);
+
+    function saveGame() {
+      localStorage.setItem('chrono_energy', energy);
+      localStorage.setItem('click_power', clickPower);
+      localStorage.setItem('auto_power', autoPower);
+    }
 
     updateDisplay();
   </script>
