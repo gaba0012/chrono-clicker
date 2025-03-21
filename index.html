@@ -4,38 +4,43 @@
   <meta charset="UTF-8" />
   <title>Chrono Clicker – Missionenmodus</title>
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #0e0e2c, #15153d);
+      background: url('assets/zeitriss-bg.png') no-repeat center center fixed;
+      background-size: cover;
       color: #f2f2f2;
       text-align: center;
-      margin: 0;
-      padding: 2em;
     }
 
     h1 {
-      font-size: 2.5em;
-      margin-bottom: 0.2em;
+      font-size: 2em;
+      margin: 0.5em 0;
       color: #62dafc;
     }
 
-    #rift {
-      position: relative;
-      width: 160px;
-      height: 160px;
-      margin: 2em auto;
+    #rift-img {
+      width: 200px;
+      height: auto;
       border-radius: 50%;
-      background: radial-gradient(circle, #62dafc 40%, #1f6fc1);
-      box-shadow: 0 0 25px #1f6fc1, 0 0 40px #62dafc;
-      animation: pulse 2s infinite;
+      animation: float 2s ease-in-out infinite, pulse 2s infinite;
+      box-shadow: 0 0 30px #62dafc;
       cursor: pointer;
-      z-index: 2;
     }
 
     @keyframes pulse {
-      0% { transform: scale(1); box-shadow: 0 0 25px #1f6fc1, 0 0 40px #62dafc; }
-      50% { transform: scale(1.05); box-shadow: 0 0 35px #62dafc, 0 0 60px #62dafc; }
-      100% { transform: scale(1); box-shadow: 0 0 25px #1f6fc1, 0 0 40px #62dafc; }
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
     }
 
     button {
@@ -46,91 +51,73 @@
       border-radius: 8px;
       color: white;
       font-weight: bold;
-      transition: background 0.3s;
+      transition: all 0.2s;
       box-shadow: 0 0 8px #1f6fc1;
     }
 
-    button:hover {
-      background-color: #3b8be3;
+    button:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 12px #ffffff;
     }
 
-    .progress-container {
-      width: 60%;
-      margin: 1em auto;
-      background-color: #333;
-      border-radius: 20px;
-      overflow: hidden;
-      height: 20px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background-color: #62dafc;
-      transition: width 0.5s;
-    }
-
-    #drones-container {
+    #interface {
       position: absolute;
-      top: 0;
+      top: 10px;
       left: 0;
-      width: 160px;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card-container {
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      margin-top: 1em;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      width: 120px;
       height: 160px;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .drone {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background-color: #ff3ec9;
-      border-radius: 50%;
-      box-shadow: 0 0 10px #ff3ec9;
-      animation: orbit 4s linear infinite;
-    }
-
-    @keyframes orbit {
-      from { transform: rotate(0deg) translateX(80px) rotate(0deg); }
-      to { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
-    }
-
-    #story-box {
-      background-color: #1a1a2d;
-      border: 1px solid #3b8be3;
+      background: #1a1a2d;
+      border: 2px solid #3b8be3;
       border-radius: 10px;
-      padding: 1em;
-      margin: 2em auto;
-      width: 70%;
-      box-shadow: 0 0 10px #1f6fc1;
+      padding: 0.5em;
+      color: white;
+      box-shadow: 0 0 8px #1f6fc1;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .falling {
+      position: absolute;
+      color: #00eaff;
+      font-weight: bold;
+      animation: fall 1s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(40px); }
     }
   </style>
 </head>
 <body>
-  <h1>Chrono Clicker – Mission: Der erste Funke</h1>
-
-  <p>Chrono-Energie: <span id="energy">0</span></p>
-  <p>Klick-Level: <span id="clickPower">1</span> | Drohnen: <span id="autoPower">0</span></p>
-
-  <div class="progress-container">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
-
-  <div id="rift">
-    <div id="drones-container"></div>
-  </div>
-
-  <div>
-    <button id="upgrade-click">Upgrade Klick – Kosten: <span id="click-cost">50</span></button>
-    <button id="upgrade-auto">Chrono-Drohne – Kosten: <span id="auto-cost">100</span></button>
-  </div>
-
-  <div id="story-box">
-    <h3>Mission: Der erste Funke</h3>
-    <p><strong>Ziel:</strong> Sammle 1.000 Chrono-Energie</p>
-    <p><strong>Beschreibung:</strong> Ein schwacher Zeitimpuls wurde in Eurorift Bas-40 entdeckt. Dr. Olen Storm schickt dich los, um ihn zu untersuchen.</p>
-    <p><strong>Lore:</strong> Die Aktivierung des CLR markiert den ersten bekannten Zugriff auf eine instabile Zeitzone.</p>
-    <p id="mission-status"><em>Status: Aktiv</em></p>
+  <div id="interface">
+    <h1>Chrono Clicker – Mission: Der erste Funke</h1>
+    <p>Chrono-Energie: <span id="energy">0</span> | Klick-Power: <span id="clickPower">1</span> | Drohnen: <span id="autoPower">0</span></p>
+    <img src="assets/zeitriss-bg.png" alt="Zeitriss" id="rift-img">
+    <div>
+      <button id="upgrade-click">Upgrade Klick – Kosten: <span id="click-cost">50</span></button>
+      <button id="upgrade-auto">Chrono-Drohne – Kosten: <span id="auto-cost">100</span></button>
+    </div>
+    <div class="card-container" id="drone-cards"></div>
   </div>
 
   <script>
@@ -138,8 +125,7 @@
     let clickPower = parseInt(localStorage.getItem('click_power')) || 1;
     let autoPower = parseInt(localStorage.getItem('auto_power')) || 0;
 
-    const missionGoal = 1000;
-    let missionCompleted = localStorage.getItem('mission1_complete') === 'true';
+    const rift = document.getElementById('rift-img');
 
     function updateDisplay() {
       document.getElementById('energy').textContent = energy;
@@ -147,49 +133,45 @@
       document.getElementById('autoPower').textContent = autoPower;
       document.getElementById('click-cost').textContent = 50 * clickPower;
       document.getElementById('auto-cost').textContent = 100 * (autoPower + 1);
-      updateProgressBar();
-      renderDrones();
-      updateMissionStatus();
+      renderDroneCards();
     }
 
-    function updateProgressBar() {
-      const progress = Math.min(100, (energy / missionGoal) * 100);
-      document.getElementById('progressBar').style.width = progress + '%';
-    }
-
-    function renderDrones() {
-      const container = document.getElementById('drones-container');
-      container.innerHTML = '';
+    function renderDroneCards() {
+      const droneCards = document.getElementById('drone-cards');
+      droneCards.innerHTML = '';
+      const drones = [
+        { name: 'Scout-Drone', effect: '+1/sec' },
+        { name: 'Echo-Drone', effect: '+Glitch-Chance' },
+        { name: 'Repair-Drone', effect: 'Kosten -10%' },
+      ];
       for (let i = 0; i < autoPower; i++) {
-        const drone = document.createElement('div');
-        drone.classList.add('drone');
-        const angle = (360 / autoPower) * i;
-        drone.style.transform = `rotate(${angle}deg) translateX(80px) rotate(-${angle}deg)`;
-        drone.style.animationDelay = `-${(4 / autoPower) * i}s`;
-        container.appendChild(drone);
+        const d = drones[i % drones.length];
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<h4>${d.name}</h4><p>${d.effect}</p>`;
+        droneCards.appendChild(card);
       }
     }
 
-    function updateMissionStatus() {
-      const status = document.getElementById('mission-status');
-      if (missionCompleted) {
-        status.innerHTML = '<strong>Status:</strong> ✅ Abgeschlossen';
-      } else if (energy >= missionGoal) {
-        missionCompleted = true;
-        localStorage.setItem('mission1_complete', 'true');
-        status.innerHTML = '<strong>Status:</strong> ✅ Abgeschlossen';
-        alert('🎉 Mission abgeschlossen: Der erste Funke!');
-      }
+    function spawnFallingNumber() {
+      const fall = document.createElement('div');
+      fall.className = 'falling';
+      fall.textContent = `+${clickPower}`;
+      fall.style.left = (window.innerWidth / 2 + (Math.random() * 60 - 30)) + 'px';
+      fall.style.top = '180px';
+      document.body.appendChild(fall);
+      setTimeout(() => fall.remove(), 1000);
     }
 
-    document.getElementById('rift').addEventListener('click', function () {
+    rift.addEventListener('click', () => {
       energy += clickPower;
+      spawnFallingNumber();
       saveGame();
       updateDisplay();
     });
 
-    document.getElementById('upgrade-click').addEventListener('click', function () {
-      const cost = 50 * clickPower;
+    document.getElementById('upgrade-click').addEventListener('click', () => {
+      let cost = 50 * clickPower;
       if (energy >= cost) {
         energy -= cost;
         clickPower++;
@@ -198,8 +180,8 @@
       }
     });
 
-    document.getElementById('upgrade-auto').addEventListener('click', function () {
-      const cost = 100 * (autoPower + 1);
+    document.getElementById('upgrade-auto').addEventListener('click', () => {
+      let cost = 100 * (autoPower + 1);
       if (energy >= cost) {
         energy -= cost;
         autoPower++;
