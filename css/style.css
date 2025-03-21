@@ -1,0 +1,28 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: url('../assets/zeitriss-bg.png') no-repeat center center fixed;
+  background-size: cover;
+  color: #f2f2f2;
+  text-align: center;
+  overflow: hidden;
+}
+h1 {
+  font-size: 2em;
+  color: #62dafc;
+}
+#rift-img {
+  width: 250px;
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 0 30px #62dafc;
+  cursor: pointer;
+}
+button {
+  padding: 0.6em 1.2em;
+  margin: 0.5em;
+  background-color: #1f6fc1;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+}
