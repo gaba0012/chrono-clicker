@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chrono Clicker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #0e0e2c;
+      color: white;
+      margin: 0;
+      padding: 2em;
+    }
+    #rift {
+      width: 150px;
+      height: 150px;
+      margin: 2em auto;
+      border-radius: 50%;
+      background: radial-gradient(circle, #62dafc, #1f6fc1);
+      cursor: pointer;
+      box-shadow: 0 0 20px #1f6fc1;
+    }
+    button {
+      padding: 0.5em 1em;
+      margin: 0.5em;
+      background-color: #1f6fc1;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Chrono Clicker</h1>
+  <p>Chrono-Energie: <span id="energy">0</span></p>
+  <p>Zeitalter: <span id="age">Steinzeit</span></p>
+  <div id="rift"></div>
+  <div>
+    <button id="upgrade-click">Upgrade Klick (+1) – Kosten: <span id="click-cost">50</span></button>
+    <button id="upgrade-auto">Chrono-Drohne (+1/sec) – Kosten: <span id="auto-cost">100</span></button>
+  </div>
+
+  <script>
+    let energy = parseInt(localStorage.getItem('chrono_energy')) || 0;
+    let clickPower = parseInt(localStorage.getItem('click_power')) || 1;
+    let autoPower = parseInt(localStorage.getItem('auto_power')) || 0;
+    let ageLevel = parseInt(localStorage.getItem('age_level')) || 0;
+
+    const ages = ['Steinzeit', 'Magisches Imperium', 'Dampf-Zeitalter', 'Zeitsplitter-Ära', 'Post-Realität'];
+
+    function updateDisplay() {
+      document.getElementById('energy').textContent = energy;
+      document.getElementById('age').textContent = ages[ageLevel] || 'Unbekannt';
+      document.getElementById('click-cost').textContent = 50 * clickPower;
+      document.getElementById('auto-cost').textContent = 100 * (autoPower + 1);
+    }
+
+    function checkAgeUp() {
+      if (energy >= (ageLevel + 1) * 500 && ageLevel < ages.length - 1) {
+        ageLevel++;
+        alert('🕒 Zeitsprung! Willkommen im ' + ages[ageLevel]);
+      }
+    }
+
+    function saveGame() {
+      localStorage.setItem('chrono_energy', energy);
+      localStorage.setItem('click_power', clickPower);
+      localStorage.setItem('auto_power', autoPower);
+      localStorage.setItem('age_level', ageLevel);
+    }
+
+    document.getElementById('rift').addEventListener('click', function () {
+      energy += clickPower;
+      checkAgeUp();
+      saveGame();
+      updateDisplay();
+    });
+
+    document.getElementById('upgrade-click').addEventListener('click', function () {
+      let cost = 50 * clickPower;
+      if (energy >= cost) {
+        energy -= cost;
+        clickPower++;
+        saveGame();
+        updateDisplay();
+      }
+    });
+
+    document.getElementById('upgrade-auto').addEventListener('click', function () {
+      let cost = 100 * (autoPower + 1);
+      if (energy >= cost) {
+        energy -= cost;
+        autoPower++;
+        saveGame();
+        updateDisplay();
+      }
+    });
+
+    setInterval(function () {
+      energy += autoPower;
+      checkAgeUp();
+      saveGame();
+      updateDisplay();
+    }, 1000);
+
+    updateDisplay();
+  </script>
+</body>
+</html>
