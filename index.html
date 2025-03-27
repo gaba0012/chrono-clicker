@@ -10,8 +10,7 @@
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: url('assets/cookie.jpg') no-repeat center center fixed;
-      background-size: cover;
+      background-color: #003366; /* Marineblau */
       color: #f2f2f2;
       text-align: center;
     }
@@ -27,18 +26,16 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 250px;
+      width: 200px;
       height: auto;
-      border-radius: 50%;
       animation: float 2s ease-in-out infinite, pulse 2s infinite;
-      box-shadow: 0 0 30px #62dafc;
       cursor: pointer;
     }
 
     @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+      0% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.05); }
+      100% { transform: translate(-50%, -50%) scale(1); }
     }
 
     @keyframes float {
@@ -63,13 +60,14 @@
       transform: scale(0.95);
       box-shadow: 0 0 12px #ffffff;
     }
-
-    </style>
+  </style>
 </head>
 <body>
   <h1>Chrono Clicker – Mission: Der erste Funke</h1>
   <p>Chrono-Energie: <span id="energy">0</span> | Klick-Power: <span id="clickPower">1</span> | Bots: <span id="autoPower">0</span></p>
-  <img src="assets/cookie.jpg" alt="cookie-img" id="cookie-img">
+  
+  <img src="assets/cookie.png" alt="cookie-img" id="cookie-img">
+
   <div>
     <button id="upgrade-click">Upgrade Klick – Kosten: <span id="click-cost">50</span></button>
     <button id="upgrade-auto">Bot – Kosten: <span id="auto-cost">100</span></button>
@@ -88,24 +86,6 @@
       document.getElementById('autoPower').textContent = autoPower;
       document.getElementById('click-cost').textContent = 50 * clickPower;
       document.getElementById('auto-cost').textContent = 100 * (autoPower + 1);
-      renderDroneCards();
-    }
-
-    function renderDroneCards() {
-      const droneCards = document.getElementById('drone-cards');
-      droneCards.innerHTML = '';
-      const drones = [
-        { name: 'Scout-Drone', effect: '+1/sec' },
-        { name: 'Echo-Drone', effect: '+Glitch-Chance' },
-        { name: 'Repair-Drone', effect: 'Kosten -10%' },
-      ];
-      for (let i = 0; i < autoPower; i++) {
-        const d = drones[i % drones.length];
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `<h4>${d.name}</h4><p>${d.effect}</p>`;
-        droneCards.appendChild(card);
-      }
     }
 
     cookie.addEventListener('click', () => {
