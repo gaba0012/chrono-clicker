@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Chrono Clicker – Missionenmodus</title>
+  <title>Cookie Clicker</title>
   <style>
     html, body {
       margin: 0;
@@ -63,8 +63,8 @@
   </style>
 </head>
 <body>
-  <h1>Chrono Clicker – Mission: Der erste Funke</h1>
-  <p>Chrono-Energie: <span id="energy">0</span> | Klick-Power: <span id="clickPower">1</span> | Bots: <span id="autoPower">0</span></p>
+  <h1>Cookie Clicker</h1>
+  <p>Cookie-Energie: <span id="energy">0</span> | Klick-Power: <span id="clickPower">1</span> | Bots: <span id="autoPower">0</span></p>
   
   <img src="assets/cookie.png" alt="cookie-img" id="cookie-img">
 
@@ -74,7 +74,7 @@
   </div>
 
   <script>
-    let energy = parseInt(localStorage.getItem('chrono_energy')) || 0;
+    let energy = parseInt(localStorage.getItem('cookie_energy')) || 0;
     let clickPower = parseInt(localStorage.getItem('click_power')) || 1;
     let autoPower = parseInt(localStorage.getItem('auto_power')) || 0;
 
@@ -121,7 +121,7 @@
     }, 1000);
 
     function saveGame() {
-      localStorage.setItem('chrono_energy', energy);
+      localStorage.setItem('cookie_energy', energy);
       localStorage.setItem('click_power', clickPower);
       localStorage.setItem('auto_power', autoPower);
     }
